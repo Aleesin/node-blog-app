@@ -31,7 +31,7 @@ app.get("/posts", (req, res) => {
 
 
 
-// GET requests by ID
+// GET requests by ID ...
 
 
 // POST
