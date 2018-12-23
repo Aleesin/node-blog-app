@@ -13,7 +13,22 @@ const { Blogpost } = require("./models");
 const app = express();
 app.use(express.json());
 
-// GET requests 
+// GET requests to /blogposts => returns blog posts
+app.get("/posts", (req, res) => {
+    Blogpost.find()
+    // success callback; for each restaurant call the .serialize instance method
+    .then(blogposts => {
+        res.json({
+            blogposts: blogposts.map(blogpost => blogpost.serialize())
+        });
+        console.log(blogposts); // this is returning empty object and so is postman
+    })
+    .catch(err => {
+        console.log(err);
+        res.status(500).json({ message: "Internal server error" });
+    });
+});
+
 
 
 // GET requests by ID
@@ -38,7 +53,7 @@ let server;
 function runServer(databaseUrl, port = PORT) {
     return new Promise((resolve, reject) => {
         mongoose.connect(
-            databaseURl, 
+            databaseUrl, 
             err => {
                 if (err) {
                     return reject(err);
