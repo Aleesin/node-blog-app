@@ -8,16 +8,19 @@ const blogpostSchema = mongoose.Schema({
     content: { type: String, required: true},
     author: {
                 firstName: String,
-                lastName: String,
-            }
+                lastName: String
+            },
+    created: { type: Date }
 });
 
 // Virtuals: create author name string out of 2 firstName and lastName keys
-// how to test this?
 blogpostSchema.virtual("authorString").get(function() {
     return `${this.author.firstName} ${this.author.lastName}`;
 });
 
+// blogpostSchema.virtual("created").get(function() {
+//     return `${this.title}`
+// })
 // instance methods: serialize to create blogpost object to return
 // how do I test this?
 blogpostSchema.methods.serialize = function() {
@@ -25,9 +28,8 @@ blogpostSchema.methods.serialize = function() {
         id: this.id,
         title: this.title,
         content: this.content,
-     //   firstName: this.author.firstName, // may not need this, is experiment
-      //  lastName: this.author.lastName, // this line too
         author: this.authorString,
+       // created: this.created // not sure how to show date when its not in db
 
     }
 }

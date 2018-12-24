@@ -15,6 +15,7 @@ const app = express();
 app.use(express.json());
 
 // GET requests to /blogposts => returns blog posts
+// not showing date, check on this later
 app.get("/posts", (req, res) => {
     Blogpost.find()
     // success callback; for each restaurant call the .serialize instance method
@@ -22,7 +23,7 @@ app.get("/posts", (req, res) => {
         res.json({
             blogposts: blogposts.map(blogpost => blogpost.serialize())
         });
-        console.log(blogposts); // this is returning empty object and so is postman
+      //  console.log(blogposts);
     })
     .catch(err => {
         console.log(err);
@@ -32,10 +33,41 @@ app.get("/posts", (req, res) => {
 
 
 
-// GET requests by ID ...
+// GET requests by ID ; shows every post with same id? weird!
+app.get("/posts/:id"), (req, res) => {
+    Blogpost
+        .findById(req.params.id)
+        .then(blogpost => blogpost.json(blogpost.serialize()))
+        .catch(err => {
+            console.error(err);
+            res.status(500).json({ message: "Internal server error"});
+        });
+};
 
 
 // POST
+app.post("/posts"), (req, res) => {
+    const requiredFields = ["title", "content", "author"]
+    for (let i = 0; i < requiredFields.length; i++) {
+        const field = requiredFields[i];
+        if (!(field in req.body)){
+            const message = `Missing ${field} in request body`;
+            console.error(message);
+            return res.status(400).send(message);
+        }
+    }
+
+    Blogpost.create({
+        title: req.body.title,
+        content: req.body.content,
+        author: req.body.author
+    })
+        .then(blogpost => res.status(201).json(blogpost.serialize()))
+        .catch(err => {
+            console.error(err);
+            res.status(500).json({ message: "Internal server error" });
+        });
+};
 
 
 // PUT
