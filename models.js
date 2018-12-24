@@ -10,12 +10,12 @@ const blogpostSchema = mongoose.Schema({
                 firstName: String,
                 lastName: String
             },
-    created: { type: Date }
+    created: { type: Date, default: Date.now }
 });
 
 // Virtuals: create author name string out of 2 firstName and lastName keys
 blogpostSchema.virtual("authorString").get(function() {
-    return `${this.author.firstName} ${this.author.lastName}`;
+    return `${this.author.firstName} ${this.author.lastName}`.trim();
 });
 
 // blogpostSchema.virtual("created").get(function() {
@@ -29,7 +29,7 @@ blogpostSchema.methods.serialize = function() {
         title: this.title,
         content: this.content,
         author: this.authorString,
-       // created: this.created // not sure how to show date when its not in db
+        created: this.created // use Date.now!
 
     }
 }

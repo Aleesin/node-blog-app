@@ -2,6 +2,7 @@
 
 const express = require("express");
 const mongoose = require("mongoose");
+const morgan = require("morgan");
 
 // Configure Mongoose to use ES6 promises
 mongoose.Promise = global.Promise;
@@ -13,15 +14,14 @@ mongoose.connect(DATABASE_URL); // from cheat sheet, not sure if this is needed
 
 const app = express();
 app.use(express.json());
+app.use(morgan('common'));
 
 // GET requests to /blogposts => returns blog posts
-// not showing date, check on this later
 app.get("/posts", (req, res) => {
     Blogpost.find()
     // success callback; for each restaurant call the .serialize instance method
-    .then(blogposts => {
-        res.json({
-            blogposts: blogposts.map(blogpost => blogpost.serialize())
+    .then(posts => {
+        res.json({ posts: posts.map(post => post.serialize())
         });
       //  console.log(blogposts);
     })
@@ -37,7 +37,7 @@ app.get("/posts", (req, res) => {
 app.get("/posts/:id"), (req, res) => {
     Blogpost
         .findById(req.params.id)
-        .then(blogpost => blogpost.json(blogpost.serialize()))
+        .then(post => res.json(post.serialize()))
         .catch(err => {
             console.error(err);
             res.status(500).json({ message: "Internal server error"});
@@ -45,8 +45,8 @@ app.get("/posts/:id"), (req, res) => {
 };
 
 
-// POST
-app.post("/posts"), (req, res) => {
+// POST:  showing 404 error
+app.post('/posts'), (req, res) => {
     const requiredFields = ["title", "content", "author"]
     for (let i = 0; i < requiredFields.length; i++) {
         const field = requiredFields[i];
@@ -66,7 +66,7 @@ app.post("/posts"), (req, res) => {
         .catch(err => {
             console.error(err);
             res.status(500).json({ message: "Internal server error" });
-        });
+            });
 };
 
 
@@ -126,4 +126,4 @@ if (require.main === module) {
     runServer(DATABASE_URL).catch(err => console.error(err));
 }
 
-module.exports = { app, runServer, closeServer}
+module.exports = { runServer, app, closeServer}
