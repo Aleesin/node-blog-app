@@ -9,6 +9,7 @@ mongoose.Promise = global.Promise;
 // config.js where we control constants for app
 const { PORT, DATABASE_URL } = require("./config");
 const { Blogpost } = require("./models");
+mongoose.connect(DATABASE_URL); // from cheat sheet, not sure if this is needed
 
 const app = express();
 app.use(express.json());
