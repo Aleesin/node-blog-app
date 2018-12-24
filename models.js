@@ -6,14 +6,10 @@ const mongoose = require("mongoose");
 const blogpostSchema = mongoose.Schema({
     title: { type: String, required: true },
     content: { type: String, required: true},
-    author: [
-        {
-            firstName: String,
-            lastName: String,
-        }
-
-    ]
-
+    author: {
+                firstName: String,
+                lastName: String,
+            }
 });
 
 // Virtuals: create author name string out of 2 firstName and lastName keys
@@ -29,8 +25,8 @@ blogpostSchema.methods.serialize = function() {
         id: this.id,
         title: this.title,
         content: this.content,
-     //   firstName: this.firstName, // may not need this, is experiment
-      //  lastName: this.lastName, // this line too
+     //   firstName: this.author.firstName, // may not need this, is experiment
+      //  lastName: this.author.lastName, // this line too
         author: this.authorString,
 
     }
