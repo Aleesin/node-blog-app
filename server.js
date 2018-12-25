@@ -31,7 +31,7 @@ app.get("/blogposts", (req, res) => {
 });
 
 
-// GET requests by ID ; shows every post same id? weird!
+// GET requests by ID
 app.get("/blogposts/:id", (req, res) => {
     Blogpost
         .findById(req.params.id)
@@ -45,7 +45,7 @@ app.get("/blogposts/:id", (req, res) => {
 });
 
 
-// POST:  showing 404 error, can't find this endpoint
+// POST: 
 app.post('/blogposts', (req, res) => {
     const requiredFields = ["title", "content", "author"]
     for (let i = 0; i < requiredFields.length; i++) {
