@@ -10,20 +10,19 @@ mongoose.Promise = global.Promise;
 // config.js where we control constants for app
 const { PORT, DATABASE_URL } = require("./config");
 const { Blogpost } = require("./models");
-mongoose.connect(DATABASE_URL); // from cheat sheet, not sure if this is needed
+//mongoose.connect(DATABASE_URL); // from cheat sheet, not sure if this is needed
 
 const app = express();
 app.use(express.json());
 app.use(morgan('common'));
 
 // GET requests to /blogposts => returns blog posts
-app.get("/posts", (req, res) => {
+app.get("/blogposts", (req, res) => {
     Blogpost.find()
-    // success callback; for each restaurant call the .serialize instance method
-    .then(posts => {
-        res.json({ posts: posts.map(post => post.serialize())
+    // success callback; for each blogpost call the .serialize instance method
+    .then(blogposts => {
+        res.json({ blogposts: blogposts.map(post => post.serialize())
         });
-      //  console.log(blogposts);
     })
     .catch(err => {
         console.log(err);
@@ -32,23 +31,22 @@ app.get("/posts", (req, res) => {
 });
 
 
-
 // GET requests by ID ; shows every post same id? weird!
-app.get("/posts/:id"), (req, res) => {
+app.get("/blogposts/:id", (req, res) => {
     Blogpost
         .findById(req.params.id)
-        .then(post => res.json(post.serialize()))
+        .then(blogpost => res.json(blogpost.serialize()))
         
         .catch(err => {
             console.error(err);
             res.status(500).json({ message: "Internal server error"});
         });
-        console.log(post);
-};
+        
+});
 
 
 // POST:  showing 404 error, can't find this endpoint
-app.post('/posts'), (req, res) => {
+app.post('/blogposts', (req, res) => {
     const requiredFields = ["title", "content", "author"]
     for (let i = 0; i < requiredFields.length; i++) {
         const field = requiredFields[i];
@@ -70,11 +68,11 @@ app.post('/posts'), (req, res) => {
             console.error(err);
             res.status(500).json({ message: "Internal server error" });
             });
-};
+});
 
 
 // PUT
-app.put('/posts/:id', (req, res) => {
+app.put('/blogposts/:id', (req, res) => {
     // Require id in request path matches id in request body
     if(!(req.params.id && req.body.id && req.params.id === req.body.id)){
         const message = 
@@ -103,7 +101,7 @@ app.put('/posts/:id', (req, res) => {
 });
 
 // DELETE
-app.delete('/posts/:id', (req, res) => {
+app.delete('/blogposts/:id', (req, res) => {
     Blogpost.findByIdAndRemove(req.params.id)
         .then(post => res.status(204).end())
         .catch(err => res.status(500).json({ message: "Internal server error"}));
