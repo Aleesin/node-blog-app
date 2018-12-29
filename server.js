@@ -9,7 +9,7 @@ mongoose.Promise = global.Promise;
 
 // config.js where we control constants for app
 const { PORT, DATABASE_URL } = require("./config");
-const { Blogpost } = require("./models");
+const { Blogpost, Author } = require("./models");
 //mongoose.connect(DATABASE_URL); // from cheat sheet, not sure if this is needed
 
 const app = express();
@@ -18,6 +18,8 @@ app.use(morgan('common'));
 
 // GET requests to /blogposts => returns blog posts
 app.get("/blogposts", (req, res) => {
+
+    // Previous endpoint code before author db added
     Blogpost.find()
     // success callback; for each blogpost call the .serialize instance method
     .then(blogposts => {
