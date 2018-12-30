@@ -149,10 +149,35 @@ app.post('/authors', (req, res) => {
             console.error(err);
             res.status(500).json({ message: "Internal server error"});
         })
-})
+});
 
 // PUT /authors/:id
+app.put('/authors/:id', (req, res) => {
+    // Require ID matches in request path and request body
+    if(!(req.params.id && req.body.id && req.params.id === req.body.id)){
+        const message =
+            `Request path id (${req.params.id} and request body id)` +
+            `(${req.body.id} must match)`;
+            console.log(message);
+            return res.status(400).json({ message: message });
+    }
 
+    // Update the following fields
+    const toUpdate = {};
+    const updateableFields = ["firstName", "lastName", "userName"];
+
+    updateableFields.forEach(field => {
+        if (field in req.body) {
+            toUpdate[field] = req.body[field];
+        }
+    });
+
+    Author
+        // update key/value pairs
+        .findByIdAndUpdate(req.params.id, {$set: toUpdate})
+        .then(post => res.status(204).end())
+        .catch(err => res.status(500).json({ message: "Internal server error" }));
+});
 
 // DELETE
 
