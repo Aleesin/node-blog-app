@@ -179,16 +179,15 @@ app.put('/authors/:id', (req, res) => {
         .catch(err => res.status(500).json({ message: "Internal server error" }));
 });
 
-// DELETE
+// DELETE /authors/:id 
+// Also delete any associated blog posts
+app.delete('authors:/:id', (req, res) => {
+    Author.findByIdAndRemove(req.params.id)
+        .then(post => res.status(204).end())
+        .catch(err => res.status(500).json({ message: "Internal server error"}));
+});
 
-
-
-
-
-
-
-
-// Catch all endpoint if client requests non-existent endpoing
+// Catch-All endpoint if client requests non-existent endpoint
 app.use("*", function(req, res) {
     res.status(404).json({ message: "Not Found"});
 });
