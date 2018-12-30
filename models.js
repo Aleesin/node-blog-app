@@ -61,7 +61,6 @@ blogpostSchema.virtual("authorString").get(function() {
 // })
 
 // instance methods: serialize to create blogpost object to return
-// how do I test this?
 blogpostSchema.methods.serialize = function() {
     return {
         id: this.id,
@@ -73,6 +72,17 @@ blogpostSchema.methods.serialize = function() {
         created: this.created, // use Date.now!
         comments: this.comments // this populates all comments on all get requests
 
+    }
+}
+
+// Author instance method to create an author object to return
+authorSchema.methods.serialize = function() {
+    return {
+        id: this.id,
+       // firstName: this.firstName,
+        //lastName: this.lastName, 
+     //   author: this.authorString, // not sure if I need this
+        userName: this.userName
     }
 }
 

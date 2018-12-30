@@ -124,6 +124,45 @@ app.delete('/blogposts/:id', (req, res) => {
         .catch(err => res.status(500).json({ message: "Internal server error"}));
 })
 
+// Authors Api Endpoints
+
+// POST /authors
+app.post('/authors', (req, res) => {
+    const requiredFields = ["firstName", "lastName", "userName"]
+    for (let i = 0; i < requiredFields.length; i++) {
+        const field = requiredFields[i];
+        if (!(field in req.body)) {
+            const message = `Missing ${field} in request body`;
+            console.error(message);
+            return res.status(400).send(message);
+        }
+    }
+
+    Author
+        .create({
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+            userName: req.body.userName
+        })
+        .then(author => res.status(201).json(author.serialize()))
+        .catch(err => {
+            console.error(err);
+            res.status(500).json({ message: "Internal server error"});
+        })
+})
+
+// PUT /authors/:id
+
+
+// DELETE
+
+
+
+
+
+
+
+
 // Catch all endpoint if client requests non-existent endpoing
 app.use("*", function(req, res) {
     res.status(404).json({ message: "Not Found"});
