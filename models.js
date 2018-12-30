@@ -1,6 +1,7 @@
 'use strict';
 
 const mongoose = require("mongoose");
+mongoose.Promise = global.Promise;
 
 
 // Schema for authors
@@ -67,7 +68,7 @@ blogpostSchema.methods.serialize = function() {
         title: this.title,
         content: this.content,
         author: this.authorString,
-       // author: this.author, // returns author object
+        author: this.author, // returns author object
 
         created: this.created, // use Date.now!
         comments: this.comments // this populates all comments on all get requests
@@ -79,9 +80,8 @@ blogpostSchema.methods.serialize = function() {
 authorSchema.methods.serialize = function() {
     return {
         id: this.id,
-       // firstName: this.firstName,
-        //lastName: this.lastName, 
-     //   author: this.authorString, // not sure if I need this
+       firstName: this.firstName,
+        lastName: this.lastName,
         userName: this.userName
     }
 }

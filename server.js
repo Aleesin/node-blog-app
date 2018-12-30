@@ -50,7 +50,7 @@ app.get("/blogposts/:id", (req, res) => {
 
 // POST: 
 app.post('/blogposts', (req, res) => {
-    const requiredFields = ["title", "content"]
+    const requiredFields = ["title", "content", "author_id"]
     for (let i = 0; i < requiredFields.length; i++) {
         const field = requiredFields[i];
         if (!(field in req.body)){
@@ -63,27 +63,34 @@ app.post('/blogposts', (req, res) => {
     // if it is in the author database.  If not return 400 status
     // If author_id value === an Id in the author collection, 
     // create the blogpost.  Otherwise, send 400 error.
-    Blogpost
-        // .populate('author')
-        // .then(function (err, post){
-        //     if(err) {
-        //         console.log(err);
-        //         res.status(400).json({ message: `Author is not in the database`});
-        //     } else {
-        //         console.log(post.author.FirstName, post.author.lastName);
-        //     }
-        // })
-        .create({
-            title: req.body.title,
-            content: req.body.content,
-           // author_id: req.body.id // not sure this is correct
-          //   author: req.body.author
+    Author
+        .findById(req.body.author_id)
+        .then(author => {
+            if (author) {
+                Blogpost 
+                    .create({
+                        title: req.body.title,
+                        content: req.body.content,
+                        author: req.body.id
+                    })
+                    .then(blogpost => res.status(201).json(blogpost.serialize()))
+                    .catch(err => {
+                        console.error(err);
+                        res.status(500).json({ message: "Internal server error" });
+                    });
+            }
+            else {
+                const message = `Author not found`;
+                console.error(message);
+                return res.status(400).send(message);
+            }
         })
-        .then(blogpost => res.status(201).json(blogpost.serialize()))
         .catch(err => {
             console.error(err);
-            res.status(500).json({ message: "Internal server error" });
-            });
+            res.status(500).json({ error: `Internal server error`});
+        });
+        
+        
 });
 
 
@@ -139,16 +146,34 @@ app.post('/authors', (req, res) => {
     }
 
     Author
-        .create({
-            firstName: req.body.firstName,
-            lastName: req.body.lastName,
-            userName: req.body.userName
+        .findOne({ userName: req.body.userName })
+        .then(author => {
+            if (author) {
+                const message = `Username already taken`;
+                console.error(message);
+                return res.status(400).send(message);
+            } 
+            else {
+                Author
+                .create({
+                    firstName: req.body.firstName,
+                    lastName: req.body.lastName,
+                    userName: req.body.userName
+                })
+                .then(author => res.status(201).json(author.serialize()))
+                .catch(err => {
+                    console.error(err);
+                    res.status(500).json({ message: "Internal server error"});
+                })
+
+            }
         })
-        .then(author => res.status(201).json(author.serialize()))
         .catch(err => {
             console.error(err);
-            res.status(500).json({ message: "Internal server error"});
-        })
+            res.status(500).json({ error: "Internal server error"});
+        });
+
+        
 });
 
 // PUT /authors/:id
@@ -181,9 +206,18 @@ app.put('/authors/:id', (req, res) => {
 
 // DELETE /authors/:id 
 // Also delete any associated blog posts
-app.delete('authors:/:id', (req, res) => {
-    Author.findByIdAndRemove(req.params.id)
-        .then(post => res.status(204).end())
+app.delete('authors/:id', (req, res) => {
+    Blogpost
+        .remove({ author: req.params.id })
+        .then(() => {
+            Author
+                .findByIdAndRemove(req.params.id)
+                .then(() => {
+                    console.log(`Deleted blog posts owned and author with id ${req.params.id}`);
+                    res.status(204).json({ message: 'success' });
+                });
+
+        })
         .catch(err => res.status(500).json({ message: "Internal server error"}));
 });
 
