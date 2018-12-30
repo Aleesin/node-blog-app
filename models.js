@@ -68,7 +68,7 @@ blogpostSchema.methods.serialize = function() {
         title: this.title,
         content: this.content,
         author: this.authorString,
-        author: this.author, // returns author object
+       // author: this.author, // returns author object
 
         created: this.created, // use Date.now!
         comments: this.comments // this populates all comments on all get requests
