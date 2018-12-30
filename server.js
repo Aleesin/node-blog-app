@@ -16,6 +16,7 @@ const app = express();
 app.use(express.json());
 app.use(morgan('common'));
 
+// Blogpost api endpoints
 // GET requests to /blogposts => returns blog posts
 app.get("/blogposts", (req, res) => {
 
@@ -38,18 +39,18 @@ app.get("/blogposts/:id", (req, res) => {
     Blogpost
         .findById(req.params.id)
         .then(blogpost => res.json(blogpost.serialize()))
-        
         .catch(err => {
             console.error(err);
             res.status(500).json({ message: "Internal server error"});
         });
+        
         
 });
 
 
 // POST: 
 app.post('/blogposts', (req, res) => {
-    const requiredFields = ["title", "content", "author"]
+    const requiredFields = ["title", "content"]
     for (let i = 0; i < requiredFields.length; i++) {
         const field = requiredFields[i];
         if (!(field in req.body)){
@@ -58,12 +59,25 @@ app.post('/blogposts', (req, res) => {
             return res.status(400).send(message);
         }
     }
-
+    // need to compare the author_id sent in request and validate 
+    // if it is in the author database.  If not return 400 status
+    // If author_id value === an Id in the author collection, 
+    // create the blogpost.  Otherwise, send 400 error.
     Blogpost
+        // .populate('author')
+        // .then(function (err, post){
+        //     if(err) {
+        //         console.log(err);
+        //         res.status(400).json({ message: `Author is not in the database`});
+        //     } else {
+        //         console.log(post.author.FirstName, post.author.lastName);
+        //     }
+        // })
         .create({
             title: req.body.title,
             content: req.body.content,
-            author: req.body.author
+           // author_id: req.body.id // not sure this is correct
+          //   author: req.body.author
         })
         .then(blogpost => res.status(201).json(blogpost.serialize()))
         .catch(err => {
@@ -86,7 +100,8 @@ app.put('/blogposts/:id', (req, res) => {
 
     // update the following fields
     const toUpdate = {};
-    const updatableFields = ["title", "content", "author"];
+    const updatableFields = ["title", "content"];
+    //const updatableFields = ["title", "content", "author"];
 
     updatableFields.forEach(field => {
         if (field in req.body) {

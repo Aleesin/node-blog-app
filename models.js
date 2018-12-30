@@ -14,7 +14,7 @@ const authorSchema = mongoose.Schema({
 });
 
 // Schema for comments 
-const commentSchema = mongoose.Schema({ content: String })
+const commentSchema = mongoose.Schema({ content: String });
 
 
 // Schema for blogposts
@@ -41,7 +41,11 @@ blogpostSchema.pre('find', function(next) {
     this.populate('author');
     next();
 })
-
+ 
+blogpostSchema.pre('findById', function(next) {
+    this.populate('comments');
+    next();
+})
 
 
 // Still needed when adding separate Schema for authors in separate DB,
@@ -51,10 +55,11 @@ blogpostSchema.virtual("authorString").get(function() {
 });
 
 
-
+// note: this virtual crashes the app
 // blogpostSchema.virtual("created").get(function() {
 //     return `${this.title}`
 // })
+
 // instance methods: serialize to create blogpost object to return
 // how do I test this?
 blogpostSchema.methods.serialize = function() {
@@ -63,7 +68,10 @@ blogpostSchema.methods.serialize = function() {
         title: this.title,
         content: this.content,
         author: this.authorString,
-        created: this.created // use Date.now!
+        author: this.author, // returns author object
+
+        created: this.created, // use Date.now!
+        comments: this.comments // this populates all comments on all get requests
 
     }
 }
@@ -73,6 +81,7 @@ blogpostSchema.methods.serialize = function() {
 
 const Blogpost = mongoose.model("blogpost", blogpostSchema);
 const Author = mongoose.model('Author', authorSchema);
+const Comment = mongoose.model('comment', commentSchema);
 
 
-module.exports = { Blogpost, Author };
+module.exports = { Blogpost, Author, Comment };
