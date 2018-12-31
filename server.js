@@ -67,17 +67,17 @@ app.post('/blogposts', (req, res) => {
         .findById(req.body.author_id)
         .then(author => {
             if (author) {
-                Blogpost 
+                return Blogpost 
                     .create({
                         title: req.body.title,
                         content: req.body.content,
-                        author: req.body.id
+                        author: req.body.author_id
                     })
                     .then(blogpost => res.status(201).json(blogpost.serialize()))
-                    .catch(err => {
-                        console.error(err);
-                        res.status(500).json({ message: "Internal server error" });
-                    });
+                    // .catch(err => {
+                    //     console.error(err);
+                    //     res.status(500).json({ message: "Internal server error" });
+                    // });
             }
             else {
                 const message = `Author not found`;
@@ -206,19 +206,23 @@ app.put('/authors/:id', (req, res) => {
 
 // DELETE /authors/:id 
 // Also delete any associated blog posts
-app.delete('authors/:id', (req, res) => {
+app.delete('/authors/:id', (req, res) => {
     Blogpost
         .remove({ author: req.params.id })
         .then(() => {
-            Author
+            return Author
                 .findByIdAndRemove(req.params.id)
                 .then(() => {
                     console.log(`Deleted blog posts owned and author with id ${req.params.id}`);
-                    res.status(204).json({ message: 'success' });
+                    res.status(204).end();
                 });
 
         })
-        .catch(err => res.status(500).json({ message: "Internal server error"}));
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({ message: "Internal server error"})
+        });
+
 });
 
 // Catch-All endpoint if client requests non-existent endpoint
