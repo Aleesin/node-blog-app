@@ -4,6 +4,18 @@ const express = require("express");
 const mongoose = require("mongoose");
 const morgan = require("morgan");
 
+
+
+
+//this should wire your routes 
+//const routes = require('./routes')
+
+
+
+// use it after all middlewares 
+//routes(app)
+
+
 // Configure Mongoose to use ES6 promises
 mongoose.Promise = global.Promise;
 
