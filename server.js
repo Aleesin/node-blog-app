@@ -130,6 +130,26 @@ app.delete('/blogposts/:id', (req, res) => {
 
 // Authors Api Endpoints
 
+// GET /authors
+app.get('/authors', (req, res) => {
+    Author
+      .find()
+      .then(authors => {
+        res.json(authors.map(author => {
+          return {
+            id: author._id,
+            name: `${author.firstName} ${author.lastName}`,
+            userName: author.userName
+          };
+        }));
+      })
+      .catch(err => {
+        console.error(err);
+        res.status(500).json({ error: 'something went terribly wrong' });
+      });
+  });
+
+
 // POST /authors
 app.post('/authors', (req, res) => {
     const requiredFields = ["firstName", "lastName", "userName"]
