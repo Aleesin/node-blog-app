@@ -74,10 +74,7 @@ app.post('/blogposts', (req, res) => {
                         author: req.body.author_id
                     })
                     .then(blogpost => res.status(201).json(blogpost.serialize()))
-                    // .catch(err => {
-                    //     console.error(err);
-                    //     res.status(500).json({ message: "Internal server error" });
-                    // });
+
             }
             else {
                 const message = `Author not found`;
